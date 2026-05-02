@@ -3,18 +3,26 @@ import Home from "./pages/Home"
 import Customers from "./pages/Customers"
 import CustomerDetail from "./pages/CustomerDetail"
 import AddDeal from "./pages/AddDeal"
+import AddCustomer from "./pages/AddCustomer"
 import RecordPayment from "./pages/RecordPayment"
+import Deals from "./pages/Deals"
 import Menu from "./pages/Menu"
+import ActionCenter from "./pages/ActionCenter"
+import Login from "./pages/Login"
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/login" element={<Login />} />
         <Route path="/" element={<Home />} />
         <Route path="/customers" element={<Customers />} />
         <Route path="/customers/:id" element={<CustomerDetail />} />
         <Route path="/add-deal" element={<AddDeal />} />
+        <Route path="/add-customer" element={<AddCustomer />} />
         <Route path="/record-payment" element={<RecordPayment />} />
+        <Route path="/deals" element={<Deals />} />
+        <Route path="/actions" element={<ActionCenter />} />
         <Route path="/menu" element={<Menu />} />
       </Routes>
     </BrowserRouter>

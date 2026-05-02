@@ -21,11 +21,11 @@ export default function BottomNav() {
         Customers
       </Link>
 
-      <Link to="/add-deal" className="w-12 h-12 -mt-7 rounded-full bg-green-700 text-white flex items-center justify-center shadow-lg">
-        <Plus size={26} />
-      </Link>
+      <Link to="/actions" className="w-12 h-12 -mt-7 rounded-full bg-green-700 text-white flex items-center justify-center shadow-lg">
+       <Plus size={26} />
+          </Link>
 
-      <Link to="/add-deal" className={itemClass("/add-deal")}>
+      <Link to="/deals" className={itemClass("/deals")}>
         <FileText size={20} />
         Deals
       </Link>
