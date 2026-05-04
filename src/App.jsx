@@ -9,6 +9,9 @@ import Deals from "./pages/Deals"
 import Menu from "./pages/Menu"
 import ActionCenter from "./pages/ActionCenter"
 import Login from "./pages/Login"
+import Notifications from "./pages/Notifications"
+import Signup from "./pages/Signup"
+
 
 export default function App() {
   return (
@@ -24,6 +27,8 @@ export default function App() {
         <Route path="/deals" element={<Deals />} />
         <Route path="/actions" element={<ActionCenter />} />
         <Route path="/menu" element={<Menu />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/notifications" element={<Notifications />} />
       </Routes>
     </BrowserRouter>
   )

@@ -2,7 +2,7 @@ import { Apple, ArrowRight, Mail } from "lucide-react"
 import { Link } from "react-router-dom"
 import AppShell from "../components/AppShell"
 
-export default function Login() {
+export default function Signup() {
   return (
     <AppShell>
       <div className="min-h-screen px-5 pt-12 pb-8 flex flex-col bg-white">
@@ -18,17 +18,25 @@ export default function Login() {
 
         <div className="mt-10">
           <p className="text-xs font-semibold uppercase tracking-wide text-green-700">
-            Welcome back
+            Create account
           </p>
           <h1 className="text-4xl font-bold mt-3 leading-tight">
-            Know who owes you. Know your profit.
+            Start tracking money clearly.
           </h1>
           <p className="text-sm text-gray-500 mt-4 leading-6">
-            Sign in to continue tracking invoices, payments, balances and deal profit.
+            Create your workspace to track customers, invoices, payments and profit.
           </p>
         </div>
 
         <form className="mt-8 space-y-4">
+          <div>
+            <label className="text-xs font-semibold text-gray-600">Business name</label>
+            <input
+              placeholder="e.g. City Clinic Supplies"
+              className="mt-2 w-full h-12 rounded-xl border border-gray-200 px-4 outline-none"
+            />
+          </div>
+
           <div>
             <label className="text-xs font-semibold text-gray-600">Email</label>
             <input
@@ -39,15 +47,10 @@ export default function Login() {
           </div>
 
           <div>
-            <div className="flex justify-between">
-              <label className="text-xs font-semibold text-gray-600">Password</label>
-              <button type="button" className="text-xs font-semibold text-green-700">
-                Forgot password?
-              </button>
-            </div>
+            <label className="text-xs font-semibold text-gray-600">Password</label>
             <input
               type="password"
-              placeholder="Enter your password"
+              placeholder="Create a password"
               className="mt-2 w-full h-12 rounded-xl border border-gray-200 px-4 outline-none"
             />
           </div>
@@ -56,7 +59,7 @@ export default function Login() {
             to="/"
             className="h-13 rounded-xl bg-green-700 text-white font-semibold flex items-center justify-center gap-2"
           >
-            Sign in
+            Create account
             <ArrowRight size={18} />
           </Link>
         </form>
@@ -70,19 +73,19 @@ export default function Login() {
         <div className="space-y-3">
           <button className="h-12 rounded-xl border border-gray-200 font-semibold w-full flex items-center justify-center gap-2">
             <Mail size={18} />
-            Continue with Google
+            Sign up with Google
           </button>
 
           <button className="h-12 rounded-xl bg-black text-white font-semibold w-full flex items-center justify-center gap-2">
             <Apple size={18} />
-            Continue with Apple
+            Sign up with Apple
           </button>
         </div>
 
         <p className="text-sm text-center text-gray-500 mt-auto pt-6">
-          New to LipaTrack?{" "}
-          <Link to="/signup" className="text-green-700 font-semibold">
-            Create account
+          Already have an account?{" "}
+          <Link to="/login" className="text-green-700 font-semibold">
+            Sign in
           </Link>
         </p>
       </div>
