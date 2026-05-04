@@ -1,12 +1,25 @@
 import { Search, Plus, ChevronRight } from "lucide-react"
 import { Link } from "react-router-dom"
+import { useState } from "react"
 import AppShell from "../components/AppShell"
 import BottomNav from "../components/BottomNav"
-import { customers, money } from "../data/mockData"
+import { useApp } from "../context/useApp"
+import { money } from "../lib/utils"
 
 export default function Customers() {
+  const { customers, getCustomerBalance } = useApp()
+  const [searchTerm, setSearchTerm] = useState("")
+
+  const filteredCustomers = customers.filter((customer) => {
+    const text = `${customer.name} ${customer.phone || ""} ${customer.business || ""}`.toLowerCase()
+    return text.includes(searchTerm.toLowerCase())
+  })
+
   const totalCustomers = customers.length
-  const totalOwed = customers.reduce((sum, customer) => sum + customer.totalOwed, 0)
+  const totalOwed = customers.reduce(
+    (sum, customer) => sum + getCustomerBalance(customer.id),
+    0
+  )
 
   return (
     <AppShell>
@@ -20,7 +33,7 @@ export default function Customers() {
           </div>
 
           <Link
-            to="/add-deal"
+            to="/actions"
             className="w-10 h-10 rounded-full bg-green-700 text-white grid place-items-center shadow-md"
           >
             <Plus size={22} />
@@ -42,6 +55,8 @@ export default function Customers() {
         <div className="h-12 rounded-xl bg-gray-50 border border-gray-100 px-4 flex items-center gap-3 mb-5">
           <Search size={18} className="text-gray-400" />
           <input
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search customer"
             className="bg-transparent outline-none text-sm flex-1"
           />
@@ -49,42 +64,62 @@ export default function Customers() {
 
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-bold text-sm">Customer list</h3>
-          <p className="text-xs text-gray-500">{totalCustomers} total</p>
+          <p className="text-xs text-gray-500">{filteredCustomers.length} shown</p>
         </div>
 
-        <section className="space-y-3">
-          {customers.map((customer) => (
+        {filteredCustomers.length === 0 ? (
+          <section className="rounded-2xl border border-gray-100 p-5 text-center">
+            <p className="font-bold">No customers found</p>
+            <p className="text-sm text-gray-500 mt-2">
+              Try another search or add a new customer.
+            </p>
+
             <Link
-              key={customer.id}
-              to={`/customers/${customer.id}`}
-              className="block rounded-2xl border border-gray-100 bg-white p-4 shadow-sm"
+              to="/add-customer"
+              className="mt-4 h-11 rounded-xl bg-green-700 text-white font-semibold flex items-center justify-center"
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-full bg-green-100 text-green-700 grid place-items-center font-bold">
-                    {customer.initials}
+              Add Customer
+            </Link>
+          </section>
+        ) : (
+          <section className="space-y-3">
+            {filteredCustomers.map((customer) => {
+              const balance = getCustomerBalance(customer.id)
+
+              return (
+                <Link
+                  key={customer.id}
+                  to={`/customers/${customer.id}`}
+                  className="block rounded-2xl border border-gray-100 bg-white p-4 shadow-sm"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-11 h-11 rounded-full bg-green-100 text-green-700 grid place-items-center font-bold">
+                        {customer.initials}
+                      </div>
+
+                      <div>
+                        <p className="font-bold text-sm">{customer.name}</p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {customer.business || "No business type"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <ChevronRight size={18} className="text-gray-400" />
                   </div>
 
-                  <div>
-                    <p className="font-bold text-sm">{customer.name}</p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {customer.deals} active deals
+                  <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+                    <p className="text-xs text-gray-500">Outstanding</p>
+                    <p className={`text-sm font-bold ${balance > 0 ? "text-red-500" : "text-green-700"}`}>
+                      {money(balance)}
                     </p>
                   </div>
-                </div>
-
-                <ChevronRight size={18} className="text-gray-400" />
-              </div>
-
-              <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
-                <p className="text-xs text-gray-500">Outstanding</p>
-                <p className="text-sm font-bold text-red-500">
-                  {money(customer.totalOwed)}
-                </p>
-              </div>
-            </Link>
-          ))}
-        </section>
+                </Link>
+              )
+            })}
+          </section>
+        )}
       </div>
 
       <BottomNav />
