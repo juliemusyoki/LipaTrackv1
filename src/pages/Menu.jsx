@@ -1,14 +1,58 @@
-import { BarChart3, HelpCircle, LogOut, Settings, ShieldCheck, User } from "lucide-react"
+import {
+  BarChart3,
+  ChevronRight,
+  HelpCircle,
+  LogOut,
+  Settings,
+  ShieldCheck,
+  User,
+} from "lucide-react"
+import { Link } from "react-router-dom"
 import AppShell from "../components/AppShell"
 import BottomNav from "../components/BottomNav"
+import { useApp } from "../context/useApp"
 
 export default function Menu() {
+  const { businessProfile } = useApp()
+
+  const initials = (businessProfile.businessName || "LT")
+    .split(" ")
+    .map((word) => word[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase()
+
   const menuItems = [
-    { icon: User, label: "Business profile", value: "RightSign Suppliers" },
-    { icon: BarChart3, label: "Profit summary", value: "Coming soon" },
-    { icon: ShieldCheck, label: "Data safety", value: "Protected" },
-    { icon: Settings, label: "Settings", value: "" },
-    { icon: HelpCircle, label: "Help & support", value: "" },
+    {
+      icon: User,
+      label: "Business profile",
+      value: businessProfile.businessName || "Add details",
+      to: "/business-profile",
+    },
+    {
+      icon: BarChart3,
+      label: "Profit summary",
+      value: "Coming soon",
+      to: "/menu",
+    },
+    {
+      icon: ShieldCheck,
+      label: "Data safety",
+      value: "Local for now",
+      to: "/menu",
+    },
+    {
+      icon: Settings,
+      label: "Settings",
+      value: "",
+      to: "/menu",
+    },
+    {
+      icon: HelpCircle,
+      label: "Help & support",
+      value: "",
+      to: "/menu",
+    },
   ]
 
   return (
@@ -23,10 +67,14 @@ export default function Menu() {
 
         <section className="rounded-2xl bg-green-700 text-white p-5 mb-5">
           <div className="w-14 h-14 rounded-full bg-white/15 grid place-items-center font-bold text-xl">
-            RS
+            {initials}
           </div>
-          <h2 className="font-bold text-xl mt-4">RightSign Suppliers</h2>
-          <p className="text-xs text-green-100 mt-1">Business clarity, without accounting chaos.</p>
+          <h2 className="font-bold text-xl mt-4">
+            {businessProfile.businessName || "Your Business"}
+          </h2>
+          <p className="text-xs text-green-100 mt-1">
+            Business clarity, without accounting chaos.
+          </p>
         </section>
 
         <section className="space-y-3">
@@ -34,19 +82,26 @@ export default function Menu() {
             const Icon = item.icon
 
             return (
-              <div
+              <Link
                 key={item.label}
+                to={item.to}
                 className="rounded-2xl border border-gray-100 p-4 flex items-center justify-between"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-green-50 text-green-700 grid place-items-center">
                     <Icon size={18} />
                   </div>
-                  <p className="font-semibold text-sm">{item.label}</p>
+
+                  <div>
+                    <p className="font-semibold text-sm">{item.label}</p>
+                    {item.value && (
+                      <p className="text-xs text-gray-500 mt-1">{item.value}</p>
+                    )}
+                  </div>
                 </div>
 
-                {item.value && <p className="text-xs text-gray-500">{item.value}</p>}
-              </div>
+                <ChevronRight size={18} className="text-gray-400" />
+              </Link>
             )
           })}
         </section>

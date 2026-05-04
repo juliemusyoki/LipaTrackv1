@@ -8,9 +8,12 @@ import { money } from "../lib/utils"
 
 export default function AddDeal() {
   const navigate = useNavigate()
-  const { customers, addDeal } = useApp()
+  const { customers, deals, addDeal } = useApp()
+
+  const suggestedCode = `INV-${String(deals.length + 1).padStart(3, "0")}`
 
   const [customerId, setCustomerId] = useState(customers[0]?.id || "")
+  const [code, setCode] = useState(suggestedCode)
   const [note, setNote] = useState("")
   const [sellingAmount, setSellingAmount] = useState("")
   const [costAmount, setCostAmount] = useState("")
@@ -21,12 +24,14 @@ export default function AddDeal() {
 
   function handleSave() {
     if (!customerId) return alert("Please add or select a customer")
+    if (!code.trim()) return alert("Invoice number is required")
     if (!sellingAmount) return alert("Selling amount is required")
     if (!costAmount) return alert("Cost amount is required")
 
     const deal = addDeal({
       customerId,
-      note: note || "Untitled deal",
+      code,
+      note: note || "Untitled invoice",
       sellingAmount,
       costAmount,
     })
@@ -38,20 +43,27 @@ export default function AddDeal() {
     <AppShell>
       <div className="px-5 pt-12 pb-28">
         <header className="flex items-center gap-3 mb-6">
-          <Link to="/actions" className="w-10 h-10 rounded-full bg-gray-50 grid place-items-center">
+          <Link
+            to="/actions"
+            className="w-10 h-10 rounded-full bg-gray-50 grid place-items-center"
+          >
             <ArrowLeft size={20} />
           </Link>
 
           <div>
             <h1 className="text-2xl font-bold">Add Invoice</h1>
-            <p className="text-xs text-gray-500">Track sale, cost, profit and balance.</p>
+            <p className="text-xs text-gray-500">
+              Track sale, cost, profit and balance.
+            </p>
           </div>
         </header>
 
         <section className="rounded-2xl bg-green-700 text-white p-5 mb-5">
           <div className="flex items-center gap-2">
             <Calculator size={18} />
-            <p className="text-xs uppercase font-semibold text-green-100">Estimated profit</p>
+            <p className="text-xs uppercase font-semibold text-green-100">
+              Estimated profit
+            </p>
           </div>
 
           <h2 className="text-4xl font-bold mt-4">{money(profit)}</h2>
@@ -70,7 +82,9 @@ export default function AddDeal() {
         ) : (
           <form className="space-y-4">
             <div>
-              <label className="text-xs font-semibold text-gray-600">Customer</label>
+              <label className="text-xs font-semibold text-gray-600">
+                Customer
+              </label>
               <select
                 value={customerId}
                 onChange={(e) => setCustomerId(e.target.value)}
@@ -85,7 +99,24 @@ export default function AddDeal() {
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-gray-600">Invoice note</label>
+              <label className="text-xs font-semibold text-gray-600">
+                Invoice number
+              </label>
+              <input
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                placeholder="INV-004"
+                className="mt-2 w-full h-12 rounded-xl border border-gray-200 px-4 outline-none"
+              />
+              <p className="text-[11px] text-gray-400 mt-2">
+                You can use the suggested number or enter your own.
+              </p>
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold text-gray-600">
+                Invoice note
+              </label>
               <input
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
@@ -95,7 +126,9 @@ export default function AddDeal() {
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-gray-600">Selling amount</label>
+              <label className="text-xs font-semibold text-gray-600">
+                Selling amount
+              </label>
               <input
                 type="number"
                 value={sellingAmount}
@@ -106,7 +139,9 @@ export default function AddDeal() {
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-gray-600">Cost amount</label>
+              <label className="text-xs font-semibold text-gray-600">
+                Cost amount
+              </label>
               <input
                 type="number"
                 value={costAmount}

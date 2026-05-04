@@ -11,6 +11,7 @@ import ActionCenter from "./pages/ActionCenter"
 import Login from "./pages/Login"
 import Notifications from "./pages/Notifications"
 import Signup from "./pages/Signup"
+import EditBusinessProfile from "./pages/EditBusinessProfile"
 
 
 export default function App() {
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="/menu" element={<Menu />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/notifications" element={<Notifications />} />
+        <Route path="/edit-business-profile" element={<EditBusinessProfile />} />
       </Routes>
     </BrowserRouter>
   )
