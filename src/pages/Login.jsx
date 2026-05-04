@@ -51,7 +51,7 @@ export default function Login() {
                     type="button"
                     className="text-xs text-green-700 font-semibold"
                   >
-                    Forgot?
+                    Forgot Password?
                   </button>
                 </div>
                 <input
