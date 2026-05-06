@@ -14,21 +14,30 @@ export default function RecordPayment() {
 
   const [selectedDealId, setSelectedDealId] = useState(unpaidDeals[0]?.id || "")
   const [amountPaid, setAmountPaid] = useState("")
+  const [isSaving, setIsSaving] = useState(false)
 
   const selectedDeal = deals.find((deal) => deal.id === selectedDealId)
   const currentDue = selectedDeal ? selectedDeal.sellingAmount - selectedDeal.paid : 0
   const newDue = Math.max(currentDue - (Number(amountPaid) || 0), 0)
 
-  function handleSave() {
+  async function handleSave() {
     if (!selectedDealId) return alert("Please select an invoice")
     if (!amountPaid) return alert("Amount paid is required")
 
-    recordPayment({
-      dealId: selectedDealId,
-      amountPaid,
-    })
+    setIsSaving(true)
 
-    navigate("/deals")
+    try {
+      await recordPayment({
+        dealId: selectedDealId,
+        amountPaid,
+      })
+
+      navigate("/deals")
+    } catch {
+      alert("Failed to record payment. Please try again.")
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   return (
@@ -107,9 +116,10 @@ export default function RecordPayment() {
             <button
               type="button"
               onClick={handleSave}
+              disabled={isSaving}
               className="w-full h-13 rounded-xl bg-green-700 text-white font-semibold mt-4"
             >
-              Save Payment
+              {isSaving ? "Saving..." : "Save Payment"}
             </button>
           </form>
         )}

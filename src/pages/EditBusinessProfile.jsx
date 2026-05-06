@@ -13,18 +13,29 @@ export default function EditBusinessProfile() {
   const [ownerName, setOwnerName] = useState(businessProfile.ownerName || "")
   const [email, setEmail] = useState(businessProfile.email || "")
   const [phone, setPhone] = useState(businessProfile.phone || "")
+  const [city, setCity] = useState(businessProfile.city || "")
+  const [isSaving, setIsSaving] = useState(false)
 
-  function handleSave() {
+  async function handleSave() {
     if (!businessName.trim()) return alert("Business name is required")
 
-    updateBusinessProfile({
-      businessName,
-      ownerName,
-      email,
-      phone,
-    })
+    setIsSaving(true)
 
-    navigate("/menu")
+    try {
+      await updateBusinessProfile({
+        businessName,
+        ownerName,
+        email,
+        phone,
+        city,
+      })
+
+      navigate("/menu")
+    } catch {
+      alert("Failed to update profile. Please try again.")
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   return (
@@ -117,12 +128,23 @@ export default function EditBusinessProfile() {
             />
           </div>
 
+          <div>
+            <label className="text-xs font-semibold text-gray-600">City</label>
+            <input
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              placeholder="e.g. Nairobi"
+              className="mt-2 w-full h-12 rounded-xl border border-gray-200 px-4 outline-none"
+            />
+          </div>
+
           <button
             type="button"
             onClick={handleSave}
+            disabled={isSaving}
             className="w-full h-13 rounded-xl bg-green-700 text-white font-semibold mt-4"
           >
-            Save Profile
+            {isSaving ? "Saving..." : "Save Profile"}
           </button>
         </form>
 
