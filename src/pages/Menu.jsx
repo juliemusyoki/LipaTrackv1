@@ -7,13 +7,30 @@ import {
   ShieldCheck,
   User,
 } from "lucide-react"
-import { Link } from "react-router-dom"
+import { useState } from "react"
+import { Link, useNavigate } from "react-router-dom"
 import AppShell from "../components/AppShell"
 import BottomNav from "../components/BottomNav"
 import { useApp } from "../context/useApp"
 
 export default function Menu() {
-  const { businessProfile } = useApp()
+  const navigate = useNavigate()
+  const { businessProfile, signOut } = useApp()
+  const [isSigningOut, setIsSigningOut] = useState(false)
+
+  async function handleSignOut() {
+    if (isSigningOut) return
+    setIsSigningOut(true)
+
+    try {
+      await signOut()
+    } catch {
+      // If sign out fails server-side, still move user away from app pages.
+    } finally {
+      navigate("/login", { replace: true })
+      setIsSigningOut(false)
+    }
+  }
 
   const initials = (businessProfile.businessName || "LT")
     .split(" ")
@@ -27,7 +44,7 @@ export default function Menu() {
       icon: User,
       label: "Business profile",
       value: businessProfile.businessName || "Add details",
-      to: "/business-profile",
+      to: "/edit-business-profile",
     },
     {
       icon: BarChart3,
@@ -73,8 +90,12 @@ export default function Menu() {
             {businessProfile.businessName || "Your Business"}
           </h2>
           <p className="text-xs text-green-100 mt-1">
-            Business clarity, without accounting chaos.
+            {businessProfile.ownerName || "Business owner"}
+            {businessProfile.city ? ` • ${businessProfile.city}` : ""}
           </p>
+          {businessProfile.phone ? (
+            <p className="text-xs text-green-100/90 mt-1">{businessProfile.phone}</p>
+          ) : null}
         </section>
 
         <section className="space-y-3">
@@ -106,9 +127,14 @@ export default function Menu() {
           })}
         </section>
 
-        <button className="mt-5 w-full h-12 rounded-xl bg-red-50 text-red-600 font-semibold flex items-center justify-center gap-2">
+        <button
+          type="button"
+          onClick={handleSignOut}
+          disabled={isSigningOut}
+          className="mt-5 w-full h-12 rounded-xl bg-red-50 text-red-600 font-semibold flex items-center justify-center gap-2"
+        >
           <LogOut size={18} />
-          Log out
+          {isSigningOut ? "Logging out..." : "Log out"}
         </button>
       </div>
 

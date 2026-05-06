@@ -17,26 +17,35 @@ export default function AddDeal() {
   const [note, setNote] = useState("")
   const [sellingAmount, setSellingAmount] = useState("")
   const [costAmount, setCostAmount] = useState("")
+  const [isSaving, setIsSaving] = useState(false)
 
   const selling = Number(sellingAmount) || 0
   const cost = Number(costAmount) || 0
   const profit = selling - cost
 
-  function handleSave() {
+  async function handleSave() {
     if (!customerId) return alert("Please add or select a customer")
     if (!code.trim()) return alert("Invoice number is required")
     if (!sellingAmount) return alert("Selling amount is required")
     if (!costAmount) return alert("Cost amount is required")
 
-    const deal = addDeal({
-      customerId,
-      code,
-      note: note || "Untitled invoice",
-      sellingAmount,
-      costAmount,
-    })
+    setIsSaving(true)
 
-    navigate(`/customers/${deal.customerId}`)
+    try {
+      const deal = await addDeal({
+        customerId,
+        code,
+        note: note || "Untitled invoice",
+        sellingAmount,
+        costAmount,
+      })
+
+      navigate(`/customers/${deal.customerId}`)
+    } catch {
+      alert("Failed to save invoice. Please try again.")
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   return (
@@ -154,9 +163,10 @@ export default function AddDeal() {
             <button
               type="button"
               onClick={handleSave}
+              disabled={isSaving}
               className="w-full h-13 rounded-xl bg-green-700 text-white font-semibold mt-4"
             >
-              Save Invoice
+              {isSaving ? "Saving..." : "Save Invoice"}
             </button>
           </form>
         )}

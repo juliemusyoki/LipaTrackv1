@@ -12,17 +12,26 @@ export default function AddCustomer() {
   const [name, setName] = useState("")
   const [phone, setPhone] = useState("")
   const [business, setBusiness] = useState("")
+  const [isSaving, setIsSaving] = useState(false)
 
-  function handleSave() {
+  async function handleSave() {
     if (!name.trim()) return alert("Customer name is required")
 
-    const customer = addCustomer({
-      name,
-      phone,
-      business,
-    })
+    setIsSaving(true)
 
-    navigate(`/customers/${customer.id}`)
+    try {
+      const customer = await addCustomer({
+        name,
+        phone,
+        business,
+      })
+
+      navigate(`/customers/${customer.id}`)
+    } catch {
+      alert("Failed to save customer. Please try again.")
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   return (
@@ -83,9 +92,10 @@ export default function AddCustomer() {
           <button
             type="button"
             onClick={handleSave}
+            disabled={isSaving}
             className="w-full h-13 rounded-xl bg-green-700 text-white font-semibold mt-4"
           >
-            Save Customer
+            {isSaving ? "Saving..." : "Save Customer"}
           </button>
         </form>
       </div>

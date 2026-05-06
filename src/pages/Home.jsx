@@ -45,7 +45,7 @@ export default function Home() {
         </header>
 
         <p className="text-sm font-semibold">
-          {getGreeting()}, {businessProfile.businessName || businessProfile.ownerName} 👋
+          {getGreeting()}, {businessProfile.businessName || businessProfile.ownerName || "there"} 👋
         </p>
         <p className="text-xs text-gray-500 mt-1">
           Here’s the money picture today.

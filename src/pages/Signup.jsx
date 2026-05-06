@@ -43,28 +43,51 @@ export default function Signup() {
     setSuccessMessage("")
     setIsSubmitting(true)
 
-    const { error: signUpError } = await supabase.auth.signUp({
-      email: formData.email,
-      password: formData.password,
-      options: {
-        data: {
-          full_name: formData.fullName,
-          business_name: formData.businessName,
-          phone_number: formData.phoneNumber,
-          city: formData.city,
-        },
-      },
-    })
+try {
+  console.log("Starting signup...")
 
-    setIsSubmitting(false)
+  // ✅ STEP 1: Create auth user ONLY
+  const { data, error } = await supabase.auth.signUp({
+    email: formData.email,
+    password: formData.password,
+  })
 
-    if (signUpError) {
-      setError(signUpError.message)
-      return
+  console.log("Signup response:", data, error)
+
+  if (error) {
+    setError(error.message)
+    return
+  }
+
+  // ⚠️ Email confirmation case
+  if (!data.session) {
+    setSuccessMessage("Check your email to confirm your account.")
+    return
+  }
+
+  // ✅ STEP 2: Insert profile separately
+  if (data.user) {
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .insert({
+        auth_user_id: data.user.id,
+        email: formData.email,
+        full_name: formData.fullName,
+        business_name: formData.businessName,
+        phone_number: formData.phoneNumber,
+        city: formData.city,
+      })
+
+    if (profileError) {
+      console.error("Profile error:", profileError.message)
     }
+  }
 
-    setSuccessMessage("Account created. Check your email to confirm your account.")
-    setTimeout(() => navigate("/login"), 1200)
+  navigate("/home")
+} catch (err) {
+  console.error(err)
+  setError(err.message || "Something went wrong")
+}
   }
 
   return (
