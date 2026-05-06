@@ -1,29 +1,31 @@
-import { Bell, ChevronRight } from "lucide-react"
+import { Bell, ChevronRight, FileText } from "lucide-react"
 import { Link } from "react-router-dom"
 import AppShell from "../components/AppShell"
 import BottomNav from "../components/BottomNav"
 import { useApp } from "../context/useApp"
-import { money } from "../lib/utils"
+import { getDealStatus, money } from "../lib/utils"
 
 function getGreeting() {
   const hour = new Date().getHours()
-
   if (hour < 12) return "Good morning"
   if (hour < 17) return "Good afternoon"
   return "Good evening"
 }
 
 export default function Home() {
-  const { customers, getCustomerBalance, getAppTotals, businessProfile } = useApp()
+  const { customers, deals, getCustomerBalance, getAppTotals, businessProfile } = useApp()
   const totals = getAppTotals()
 
   const customersWithBalances = customers
-    .map((customer) => ({
-      ...customer,
-      balance: getCustomerBalance(customer.id),
-    }))
+    .map((customer) => ({ ...customer, balance: getCustomerBalance(customer.id) }))
     .sort((a, b) => b.balance - a.balance)
     .slice(0, 3)
+
+  const recentDeals = deals.slice(0, 3)
+
+  function getCustomerName(customerId) {
+    return customers.find((customer) => customer.id === customerId)?.name || "Unknown"
+  }
 
   return (
     <AppShell>
@@ -45,10 +47,10 @@ export default function Home() {
         </header>
 
         <p className="text-sm font-semibold">
-          {getGreeting()}, {businessProfile.businessName || businessProfile.ownerName} 👋
+          {getGreeting()}, {businessProfile.businessName || "your business"} 👋
         </p>
         <p className="text-xs text-gray-500 mt-1">
-          Here’s the money picture today.
+          Here’s what your money records show today.
         </p>
 
         <section className="mt-5 rounded-2xl bg-green-700 text-white p-5 shadow-md">
@@ -58,16 +60,16 @@ export default function Home() {
           </div>
           <h2 className="text-4xl font-bold mt-4">{money(totals.totalOutstanding)}</h2>
           <p className="text-xs mt-2 text-green-100">
-            Across {totals.customersCount} customers
+            Across {totals.dealsCount} invoices
           </p>
         </section>
 
         <section className="grid grid-cols-2 gap-3 mt-4">
           <div className="rounded-xl border border-gray-100 p-4">
-            <p className="text-[11px] uppercase text-gray-500 font-semibold">Total Sales</p>
+            <p className="text-[11px] uppercase text-gray-500 font-semibold">Sales</p>
             <p className="font-bold mt-2">{money(totals.totalSales)}</p>
             <span className="text-xs text-gray-500 bg-gray-50 rounded-full px-2 py-1 inline-block mt-3">
-              All invoices
+              Total invoiced
             </span>
           </div>
 
@@ -80,6 +82,45 @@ export default function Home() {
               Sales - cost
             </span>
           </div>
+        </section>
+
+        <div className="flex justify-between items-center mt-6 mb-3">
+          <h3 className="font-bold text-sm">Recent invoices</h3>
+          <Link to="/deals" className="text-xs font-semibold text-green-700">
+            View all
+          </Link>
+        </div>
+
+        <section className="rounded-xl border border-gray-100 overflow-hidden">
+          {recentDeals.map((deal) => {
+            const status = getDealStatus(deal)
+            const due = Math.max(deal.sellingAmount - deal.paid, 0)
+
+            return (
+              <Link
+                key={deal.id}
+                to="/deals"
+                className="flex items-center justify-between p-4 border-b border-gray-100 last:border-0"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full bg-green-50 text-green-700 grid place-items-center">
+                    <FileText size={17} />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-sm">{deal.code}</p>
+                    <p className="text-xs text-gray-500">{getCustomerName(deal.customerId)}</p>
+                  </div>
+                </div>
+
+                <div className="text-right">
+                  <p className={`text-sm font-bold ${due > 0 ? "text-red-500" : "text-green-700"}`}>
+                    {money(due)}
+                  </p>
+                  <p className="text-[11px] text-gray-400">{status}</p>
+                </div>
+              </Link>
+            )
+          })}
         </section>
 
         <div className="flex justify-between items-center mt-6 mb-3">

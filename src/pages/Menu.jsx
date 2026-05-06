@@ -32,26 +32,26 @@ export default function Menu() {
     {
       icon: BarChart3,
       label: "Profit summary",
-      value: "Coming soon",
-      to: "/menu",
+      value: "View totals",
+      to: "/profit-summary",
     },
     {
       icon: ShieldCheck,
       label: "Data safety",
-      value: "Local for now",
-      to: "/menu",
+      value: "Local MVP",
+      to: "/data-safety",
     },
     {
       icon: Settings,
       label: "Settings",
-      value: "",
-      to: "/menu",
+      value: "Preferences",
+      to: "/settings",
     },
     {
       icon: HelpCircle,
       label: "Help & support",
-      value: "",
-      to: "/menu",
+      value: "How it works",
+      to: "/help",
     },
   ]
 
@@ -65,7 +65,7 @@ export default function Menu() {
           <h1 className="text-2xl font-bold mt-1">Menu</h1>
         </header>
 
-        <section className="rounded-2xl bg-green-700 text-white p-5 mb-5">
+        <Link to="/business-profile" className="block rounded-2xl bg-green-700 text-white p-5 mb-5">
           <div className="w-14 h-14 rounded-full bg-white/15 grid place-items-center font-bold text-xl">
             {initials}
           </div>
@@ -73,9 +73,9 @@ export default function Menu() {
             {businessProfile.businessName || "Your Business"}
           </h2>
           <p className="text-xs text-green-100 mt-1">
-            Business clarity, without accounting chaos.
+            Tap to edit your business details.
           </p>
-        </section>
+        </Link>
 
         <section className="space-y-3">
           {menuItems.map((item) => {
@@ -94,9 +94,7 @@ export default function Menu() {
 
                   <div>
                     <p className="font-semibold text-sm">{item.label}</p>
-                    {item.value && (
-                      <p className="text-xs text-gray-500 mt-1">{item.value}</p>
-                    )}
+                    <p className="text-xs text-gray-500 mt-1">{item.value}</p>
                   </div>
                 </div>
 
@@ -106,10 +104,13 @@ export default function Menu() {
           })}
         </section>
 
-        <button className="mt-5 w-full h-12 rounded-xl bg-red-50 text-red-600 font-semibold flex items-center justify-center gap-2">
+        <Link
+          to="/login"
+          className="mt-5 w-full h-12 rounded-xl bg-red-50 text-red-600 font-semibold flex items-center justify-center gap-2"
+        >
           <LogOut size={18} />
           Log out
-        </button>
+        </Link>
       </div>
 
       <BottomNav />

@@ -12,6 +12,10 @@ import Login from "./pages/Login"
 import Notifications from "./pages/Notifications"
 import Signup from "./pages/Signup"
 import EditBusinessProfile from "./pages/EditBusinessProfile"
+import ProfitSummary from "./pages/ProfitSummary"
+import DataSafety from "./pages/DataSafety"
+import Settings from "./pages/Settings"
+import HelpSupport from "./pages/HelpSupport"
 
 
 export default function App() {
@@ -31,6 +35,10 @@ export default function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/edit-business-profile" element={<EditBusinessProfile />} />
+        <Route path="/profit-summary" element={<ProfitSummary />} />
+        <Route path="/data-safety" element={<DataSafety />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/help-support" element={<HelpSupport />} />
       </Routes>
     </BrowserRouter>
   )
