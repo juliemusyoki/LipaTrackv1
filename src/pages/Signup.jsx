@@ -1,135 +1,295 @@
-import {
-  Apple,
-  ArrowRight,
-  Mail,
-  ShieldCheck,
-  TrendingUp,
-  Wallet,
-} from "lucide-react"
-import { Link } from "react-router-dom"
+import { useState } from "react"
+import { ArrowRight, Eye, EyeOff } from "lucide-react"
+import { Link, useNavigate } from "react-router-dom"
+import { supabase } from "../lib/supabaseClient"
 
 export default function Signup() {
+  const navigate = useNavigate()
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const [error, setError] = useState("")
+  const [successMessage, setSuccessMessage] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [formData, setFormData] = useState({
+    fullName: "",
+    businessName: "",
+    email: "",
+    password: "",
+    phoneNumber: "",
+    city: "",
+  })
+
+  const passwordsMatch =
+    confirmPassword.length === 0 || formData.password === confirmPassword
+
+  function handleChange(event) {
+    const { name, value } = event.target
+    setFormData((current) => ({
+      ...current,
+      [name]: value,
+    }))
+  }
+
+  async function handleSignup(event) {
+    event.preventDefault()
+
+    if (formData.password !== confirmPassword) {
+      setError("Passwords do not match.")
+      return
+    }
+
+    setError("")
+    setSuccessMessage("")
+    setIsSubmitting(true)
+
+    const { error: signUpError } = await supabase.auth.signUp({
+      email: formData.email,
+      password: formData.password,
+      options: {
+        data: {
+          full_name: formData.fullName,
+          business_name: formData.businessName,
+          phone_number: formData.phoneNumber,
+          city: formData.city,
+        },
+      },
+    })
+
+    setIsSubmitting(false)
+
+    if (signUpError) {
+      setError(signUpError.message)
+      return
+    }
+
+    setSuccessMessage("Account created. Check your email to confirm your account.")
+    setTimeout(() => navigate("/login"), 1200)
+  }
+
   return (
-    <main className="min-h-screen bg-[#f3f6f4] flex items-center justify-center px-4 py-4">
-      <div className="w-full max-w-[1080px] min-h-[620px] max-h-[calc(100vh-32px)] bg-white rounded-3xl shadow-sm overflow-hidden grid lg:grid-cols-[1fr_0.9fr]">
-        <section className="px-6 sm:px-10 lg:px-12 py-7 lg:py-8 flex flex-col justify-center overflow-y-auto">
-          <div className="w-full max-w-[420px] mx-auto">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="w-10 h-10 rounded-xl bg-green-700 text-white grid place-items-center">
-                <TrendingUp size={22} />
-              </div>
-              <p className="font-bold text-lg">LipaTrack</p>
+    <div className="min-h-screen flex flex-col lg:flex-row bg-[#f6faf7]">
+      <section className="hidden lg:flex lg:w-1/2 bg-green-100 p-12 xl:p-20 flex-col justify-between">
+        <Link to="/" className="text-2xl font-bold italic text-green-900">
+          LipaTrack.
+        </Link>
+
+        <div className="max-w-xl">
+          <h2 className="text-5xl xl:text-6xl font-bold leading-tight text-green-900 mt-10">
+            Join the <span className="italic">movement</span>.
+          </h2>
+          <p className="text-lg xl:text-xl text-green-700 mt-6 max-w-lg">
+            Create an account to track customers, monitor payments, and grow
+            your business with clarity.
+          </p>
+        </div>
+
+        <p className="text-sm font-medium text-green-700">
+          © {new Date().getFullYear()} LipaTrack
+        </p>
+      </section>
+
+      <section className="relative flex flex-col justify-center w-full lg:w-1/2 px-5 py-8 sm:px-8 lg:px-14 xl:px-24">
+        <Link
+          to="/"
+          className="absolute top-6 left-5 sm:left-8 lg:hidden text-2xl font-bold italic text-green-900"
+        >
+          LipaTrack.
+        </Link>
+
+        <div className="w-full max-w-md mx-auto pt-14 lg:pt-0">
+          <div className="mb-9 sm:mb-10">
+            <h1 className="text-3xl sm:text-4xl font-bold text-green-950 mb-2">
+              Create Account
+            </h1>
+            <p className="text-green-700">
+              Start using LipaTrack in minutes.
+            </p>
+          </div>
+
+          <form onSubmit={handleSignup} className="space-y-6 sm:space-y-7">
+            <div className="space-y-2">
+              <label className="block text-[11px] sm:text-xs font-bold text-green-900 uppercase tracking-widest">
+                Full Name
+              </label>
+              <input
+                type="text"
+                name="fullName"
+                value={formData.fullName}
+                onChange={handleChange}
+                className="w-full pb-3 border-b-2 border-green-200 bg-transparent focus:border-green-700 outline-none transition-colors text-base sm:text-lg"
+                required
+              />
             </div>
 
-            <div>
-              <h1 className="text-3xl sm:text-4xl font-bold leading-tight">
-                Create your account
-              </h1>
-              <p className="text-sm text-gray-500 mt-2">
-                Start tracking customers, invoices, payments and profit.
-              </p>
+            <div className="space-y-2">
+              <label className="block text-[11px] sm:text-xs font-bold text-green-900 uppercase tracking-widest">
+                Business Name
+              </label>
+              <input
+                type="text"
+                name="businessName"
+                value={formData.businessName}
+                onChange={handleChange}
+                className="w-full pb-3 border-b-2 border-green-200 bg-transparent focus:border-green-700 outline-none transition-colors text-base sm:text-lg"
+                required
+              />
             </div>
 
-            <form className="mt-7 space-y-4">
-              <div>
-                <label className="text-xs font-semibold text-gray-600">
-                  Business name
-                </label>
-                <input
-                  placeholder="e.g. ABC Supplies"
-                  className="mt-2 w-full h-12 rounded-xl border border-gray-200 px-4 outline-none focus:border-green-700"
-                />
-              </div>
+            <div className="space-y-2">
+              <label className="block text-[11px] sm:text-xs font-bold text-green-900 uppercase tracking-widest">
+                Email Address
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="you@example.com"
+                className="w-full pb-3 border-b-2 border-green-200 bg-transparent focus:border-green-700 outline-none transition-colors text-base sm:text-lg placeholder:text-green-400"
+                required
+              />
+            </div>
 
-              <div>
-                <label className="text-xs font-semibold text-gray-600">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  placeholder="you@example.com"
-                  className="mt-2 w-full h-12 rounded-xl border border-gray-200 px-4 outline-none focus:border-green-700"
-                />
-              </div>
-
-              <div>
-                <label className="text-xs font-semibold text-gray-600">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-4">
+              <div className="space-y-2">
+                <label className="block text-[11px] sm:text-xs font-bold text-green-900 uppercase tracking-widest">
                   Password
                 </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    minLength={8}
+                    className="w-full pb-3 pr-10 border-b-2 border-green-200 bg-transparent focus:border-green-700 outline-none transition-colors text-base sm:text-lg"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((current) => !current)}
+                    className="absolute right-0 top-1/2 -translate-y-1/2 text-green-500 hover:text-green-700 mb-3"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-[11px] sm:text-xs font-bold text-green-900 uppercase tracking-widest">
+                  Confirm
+                </label>
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={confirmPassword}
+                    onChange={(event) => setConfirmPassword(event.target.value)}
+                    className={`w-full pb-3 pr-10 border-b-2 bg-transparent outline-none transition-colors text-base sm:text-lg ${
+                      passwordsMatch
+                        ? "border-green-200 focus:border-green-700"
+                        : "border-red-500"
+                    }`}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setShowConfirmPassword((current) => !current)
+                    }
+                    className="absolute right-0 top-1/2 -translate-y-1/2 text-green-500 hover:text-green-700 mb-3"
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {!passwordsMatch ? (
+              <p className="text-sm font-medium text-red-600 -mt-1">
+                Passwords do not match
+              </p>
+            ) : null}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-4">
+              <div className="space-y-2">
+                <label className="block text-[11px] sm:text-xs font-bold text-green-900 uppercase tracking-widest">
+                  Phone
+                </label>
                 <input
-                  type="password"
-                  placeholder="Create password"
-                  className="mt-2 w-full h-12 rounded-xl border border-gray-200 px-4 outline-none focus:border-green-700"
+                  type="tel"
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={handleChange}
+                  required
+                  className="w-full pb-3 border-b-2 border-green-200 bg-transparent focus:border-green-700 outline-none transition-colors text-base sm:text-lg"
                 />
               </div>
 
-              <Link
-                to="/"
-                className="h-12 rounded-xl bg-green-700 text-white font-semibold flex items-center justify-center gap-2"
+              <div className="space-y-2">
+                <label className="block text-[11px] sm:text-xs font-bold text-green-900 uppercase tracking-widest">
+                  City
+                </label>
+                <input
+                  type="text"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleChange}
+                  required
+                  className="w-full pb-3 border-b-2 border-green-200 bg-transparent focus:border-green-700 outline-none transition-colors text-base sm:text-lg"
+                />
+              </div>
+            </div>
+
+            {error ? (
+              <div className="p-3.5 bg-red-50 text-red-700 text-sm font-medium rounded-xl border border-red-100">
+                {error}
+              </div>
+            ) : null}
+
+            {successMessage ? (
+              <div className="p-3.5 bg-green-50 text-green-700 text-sm font-medium rounded-xl border border-green-100">
+                {successMessage}
+              </div>
+            ) : null}
+
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-green-900 text-white px-8 py-4 sm:py-5 rounded-xl font-bold hover:bg-green-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-sm"
               >
-                Create account
-                <ArrowRight size={18} />
-              </Link>
-            </form>
-
-            <div className="flex items-center gap-3 my-5">
-              <div className="h-px bg-gray-100 flex-1" />
-              <p className="text-xs text-gray-400">or sign up with</p>
-              <div className="h-px bg-gray-100 flex-1" />
-            </div>
-
-            <div className="space-y-3">
-              <button className="h-11 rounded-xl border border-gray-200 w-full flex items-center justify-center gap-2 hover:bg-gray-50">
-                <Mail size={17} />
-                Sign up with Google
-              </button>
-
-              <button className="h-11 rounded-xl bg-black text-white w-full flex items-center justify-center gap-2">
-                <Apple size={17} />
-                Sign up with Apple
+                {isSubmitting ? (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <>
+                    <span className="text-base sm:text-lg">Create Account</span>
+                    <ArrowRight className="w-5 h-5" />
+                  </>
+                )}
               </button>
             </div>
 
-            <p className="text-sm text-gray-500 mt-7">
+            <p className="text-center text-green-700 mt-6 sm:mt-8 font-medium text-sm sm:text-base">
               Already have an account?{" "}
-              <Link to="/login" className="text-green-700 font-semibold">
+              <Link
+                to="/login"
+                className="text-green-950 font-bold hover:underline transition-colors"
+              >
                 Sign in
               </Link>
             </p>
-          </div>
-        </section>
-
-        <section className="hidden lg:flex bg-gradient-to-br from-green-50 via-white to-green-100 px-10 py-8 items-center justify-center">
-          <div className="max-w-[330px]">
-            <div className="w-20 h-20 rounded-2xl bg-green-700 text-white grid place-items-center shadow-md">
-              <TrendingUp size={40} />
-            </div>
-
-            <h2 className="text-4xl font-bold mt-6 text-green-800">
-              LipaTrack
-            </h2>
-
-            <p className="text-gray-600 mt-2">Track. Collect. Profit.</p>
-
-            <div className="mt-8 space-y-4">
-              <div className="flex items-center gap-3">
-                <Wallet size={18} className="text-green-700" />
-                <p className="text-sm">Track who owes what</p>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <TrendingUp size={18} className="text-green-700" />
-                <p className="text-sm">Know profit per invoice</p>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <ShieldCheck size={18} className="text-green-700" />
-                <p className="text-sm">Simple, clear and secure</p>
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
-    </main>
+          </form>
+        </div>
+      </section>
+    </div>
   )
 }
