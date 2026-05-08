@@ -7,30 +7,13 @@ import {
   ShieldCheck,
   User,
 } from "lucide-react"
-import { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import AppShell from "../components/AppShell"
 import BottomNav from "../components/BottomNav"
 import { useApp } from "../context/useApp"
 
 export default function Menu() {
-  const navigate = useNavigate()
-  const { businessProfile, signOut } = useApp()
-  const [isSigningOut, setIsSigningOut] = useState(false)
-
-  async function handleSignOut() {
-    if (isSigningOut) return
-    setIsSigningOut(true)
-
-    try {
-      await signOut()
-    } catch {
-      // If sign out fails server-side, still move user away from app pages.
-    } finally {
-      navigate("/login", { replace: true })
-      setIsSigningOut(false)
-    }
-  }
+  const { businessProfile } = useApp()
 
   const initials = (businessProfile.businessName || "LT")
     .split(" ")
@@ -44,7 +27,7 @@ export default function Menu() {
       icon: User,
       label: "Business profile",
       value: businessProfile.businessName || "Add details",
-      to: "/edit-business-profile",
+      to: "/business-profile",
     },
     {
       icon: BarChart3,
@@ -92,7 +75,7 @@ export default function Menu() {
           <p className="text-xs text-green-100 mt-1">
             Tap to edit your business details.
           </p>
-        </section>
+        </Link>
 
         <section className="space-y-3">
           {menuItems.map((item) => {
@@ -127,7 +110,7 @@ export default function Menu() {
         >
           <LogOut size={18} />
           Log out
-        </button>
+        </Link>
       </div>
 
       <BottomNav />
