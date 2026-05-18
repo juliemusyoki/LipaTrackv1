@@ -8,7 +8,12 @@ const initialBusinessProfile = {
   ownerName: "",
   email: "",
   phone: "",
-  city: "",
+  address: "",
+  taxLabel: "VAT",
+  taxRate: 16,
+  currency: "KES",
+  invoicePrefix: "INV",
+  logo: "",
 }
 
 export function AppProvider({ children }) {
@@ -49,7 +54,11 @@ export function AppProvider({ children }) {
       ownerName: profile?.full_name || "",
       email: profile?.email || user.email || "",
       phone: profile?.phone_number || "",
-      city: profile?.city || "",
+      address: profile?.address || "",
+      taxLabel: profile?.tax_label || "VAT",
+      taxRate: profile?.tax_rate || 16,
+      currency: profile?.currency || "KES",
+      invoicePrefix: profile?.invoice_prefix || "INV",
     })
 
     const customerRows = customersResult.data || []

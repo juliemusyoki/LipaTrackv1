@@ -7,100 +7,194 @@ import { useApp } from "../context/useApp"
 
 export default function EditBusinessProfile() {
   const navigate = useNavigate()
-  const { businessProfile, updateBusinessProfile } = useApp()
 
-  const [businessName, setBusinessName] = useState(businessProfile.businessName || "")
-  const [ownerName, setOwnerName] = useState(businessProfile.ownerName || "")
-  const [email, setEmail] = useState(businessProfile.email || "")
-  const [phone, setPhone] = useState(businessProfile.phone || "")
-  const [city, setCity] = useState(businessProfile.city || "")
-  const [isSaving, setIsSaving] = useState(false)
+  const {
+    businessProfile,
+    updateBusinessProfile,
+  } = useApp()
 
-  async function handleSave() {
-    if (!businessName.trim()) return alert("Business name is required")
+  const [businessName, setBusinessName] = useState(
+    businessProfile.businessName || ""
+  )
 
-    setIsSaving(true)
+  const [ownerName, setOwnerName] = useState(
+    businessProfile.ownerName || ""
+  )
 
-    try {
-      await updateBusinessProfile({
-        businessName,
-        ownerName,
-        email,
-        phone,
-        city,
-      })
+  const [email, setEmail] = useState(
+    businessProfile.email || ""
+  )
 
-      navigate("/menu")
-    } catch {
-      alert("Failed to update profile. Please try again.")
-    } finally {
-      setIsSaving(false)
+  const [phone, setPhone] = useState(
+    businessProfile.phone || ""
+  )
+
+  const [address, setAddress] = useState(
+    businessProfile.address || ""
+  )
+
+  const [taxRate, setTaxRate] = useState(
+    businessProfile.taxRate || 16
+  )
+
+  const [invoicePrefix, setInvoicePrefix] = useState(
+    businessProfile.invoicePrefix || "INV"
+  )
+
+  const [logo, setLogo] = useState(
+    businessProfile.logo || ""
+  )
+
+  function handleLogoUpload(e) {
+    const file = e.target.files[0]
+
+    if (!file) return
+
+    const reader = new FileReader()
+
+    reader.onloadend = () => {
+      setLogo(reader.result)
     }
+
+    reader.readAsDataURL(file)
+  }
+
+  function handleSave() {
+    updateBusinessProfile({
+      businessName,
+      ownerName,
+      email,
+      phone,
+      address,
+      taxRate,
+      invoicePrefix,
+      logo,
+    })
+
+    navigate("/menu")
   }
 
   return (
     <AppShell>
-      <div className="px-5 pt-12 pb-28">
+      <div className="px-5 pt-12 pb-28 max-w-[700px] mx-auto">
 
-        {/* HEADER */}
         <header className="flex items-center gap-3 mb-6">
-          <Link to="/menu" className="w-10 h-10 rounded-full bg-gray-50 grid place-items-center">
+          <Link
+            to="/menu"
+            className="w-10 h-10 rounded-full bg-gray-50 grid place-items-center"
+          >
             <ArrowLeft size={20} />
           </Link>
 
           <div>
-            <h1 className="text-2xl font-bold">Business Profile</h1>
+            <h1 className="text-2xl font-bold">
+              Business Profile
+            </h1>
+
             <p className="text-xs text-gray-500">
-              This information will appear on invoices and across your workspace.
+              This information appears on invoices and documents.
             </p>
           </div>
         </header>
 
-        {/* PREVIEW CARD (IMPORTANT) */}
-        <section className="rounded-2xl bg-green-700 text-white p-5 mb-5 shadow-md">
-          <div className="w-12 h-12 rounded-full bg-white/15 grid place-items-center mb-4">
-            <Building2 size={22} />
-          </div>
+        {/* PREVIEW */}
+        <section className="rounded-3xl bg-green-700 text-white p-6 mb-6 shadow-sm">
 
-          <h2 className="text-xl font-bold">
-            {businessName || "Your Business"}
-          </h2>
+          <div className="flex items-start gap-4">
 
-          <p className="text-sm text-green-100 mt-1">
-            {ownerName || "Owner name"}
-          </p>
+            <div className="w-20 h-20 rounded-2xl overflow-hidden bg-white/10 border border-white/10">
 
-          {(email || phone) && (
-            <div className="text-xs text-green-100 mt-3 space-y-1">
-              {email && <p>{email}</p>}
-              {phone && <p>{phone}</p>}
+              {logo ? (
+                <img
+                  src={logo}
+                  alt="Business Logo"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full grid place-items-center">
+                  <Building2 size={28} />
+                </div>
+              )}
             </div>
-          )}
+
+            <div>
+              <h2 className="text-2xl font-bold">
+                {businessName || "Your Business"}
+              </h2>
+
+              <p className="text-sm text-green-100 mt-1">
+                {ownerName || "Owner Name"}
+              </p>
+
+              <div className="text-xs text-green-100 mt-3 space-y-1">
+                <p>{email}</p>
+                <p>{phone}</p>
+                <p>{address}</p>
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* FORM */}
-        <form className="space-y-4">
+        <form className="space-y-5">
+
           <div>
             <label className="text-xs font-semibold text-gray-600">
-              Business name
+              Business Logo
             </label>
+
+            <div className="mt-3 flex items-center gap-4">
+
+              <div className="w-20 h-20 rounded-2xl overflow-hidden border border-gray-200 bg-gray-50">
+                {logo ? (
+                  <img
+                    src={logo}
+                    alt="Logo"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full grid place-items-center text-xs text-gray-400">
+                    No Logo
+                  </div>
+                )}
+              </div>
+
+              <label className="h-11 px-4 rounded-xl bg-gray-100 flex items-center cursor-pointer text-sm font-semibold">
+                Upload Logo
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleLogoUpload}
+                  className="hidden"
+                />
+              </label>
+            </div>
+          </div>
+
+          <div>
+            <label className="text-xs font-semibold text-gray-600">
+              Business Name
+            </label>
+
             <input
               value={businessName}
               onChange={(e) => setBusinessName(e.target.value)}
-              placeholder="e.g. ABC Supplies"
-              className="mt-2 w-full h-12 rounded-xl border border-gray-200 px-4 outline-none focus:border-green-700"
+              placeholder="ABC Supplies"
+              className="mt-2 w-full h-12 rounded-xl border border-gray-200 px-4 outline-none"
             />
           </div>
 
           <div>
             <label className="text-xs font-semibold text-gray-600">
-              Owner name
+              Owner Name
             </label>
+
             <input
               value={ownerName}
               onChange={(e) => setOwnerName(e.target.value)}
-              placeholder="e.g. Jane"
-              className="mt-2 w-full h-12 rounded-xl border border-gray-200 px-4 outline-none focus:border-green-700"
+              placeholder="Jane Doe"
+              className="mt-2 w-full h-12 rounded-xl border border-gray-200 px-4 outline-none"
             />
           </div>
 
@@ -108,11 +202,12 @@ export default function EditBusinessProfile() {
             <label className="text-xs font-semibold text-gray-600">
               Email
             </label>
+
             <input
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              className="mt-2 w-full h-12 rounded-xl border border-gray-200 px-4 outline-none focus:border-green-700"
+              placeholder="business@email.com"
+              className="mt-2 w-full h-12 rounded-xl border border-gray-200 px-4 outline-none"
             />
           </div>
 
@@ -120,34 +215,64 @@ export default function EditBusinessProfile() {
             <label className="text-xs font-semibold text-gray-600">
               Phone
             </label>
+
             <input
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              placeholder="0712 000 000"
-              className="mt-2 w-full h-12 rounded-xl border border-gray-200 px-4 outline-none focus:border-green-700"
+              placeholder="+254..."
+              className="mt-2 w-full h-12 rounded-xl border border-gray-200 px-4 outline-none"
             />
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-gray-600">City</label>
+            <label className="text-xs font-semibold text-gray-600">
+              Address
+            </label>
+
             <input
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              placeholder="e.g. Nairobi"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder="Nairobi, Kenya"
               className="mt-2 w-full h-12 rounded-xl border border-gray-200 px-4 outline-none"
             />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+
+            <div>
+              <label className="text-xs font-semibold text-gray-600">
+                VAT %
+              </label>
+
+              <input
+                type="number"
+                value={taxRate}
+                onChange={(e) => setTaxRate(e.target.value)}
+                className="mt-2 w-full h-12 rounded-xl border border-gray-200 px-4 outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold text-gray-600">
+                Invoice Prefix
+              </label>
+
+              <input
+                value={invoicePrefix}
+                onChange={(e) => setInvoicePrefix(e.target.value)}
+                className="mt-2 w-full h-12 rounded-xl border border-gray-200 px-4 outline-none"
+              />
+            </div>
           </div>
 
           <button
             type="button"
             onClick={handleSave}
-            disabled={isSaving}
-            className="w-full h-13 rounded-xl bg-green-700 text-white font-semibold mt-4"
+            className="w-full h-13 rounded-xl bg-green-700 text-white font-semibold"
           >
-            {isSaving ? "Saving..." : "Save Profile"}
+            Save Profile
           </button>
         </form>
-
       </div>
 
       <BottomNav />

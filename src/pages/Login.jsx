@@ -98,7 +98,7 @@ export default function Login() {
                   type="button"
                   className="text-[11px] sm:text-xs font-bold text-green-700 hover:text-green-950 transition-colors uppercase tracking-widest"
                 >
-                  Forgot?
+                  Forgot Password?
                 </button>
               </div>
               <div className="relative">

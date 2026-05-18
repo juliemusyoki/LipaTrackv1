@@ -16,6 +16,7 @@ import ProfitSummary from "./pages/ProfitSummary"
 import DataSafety from "./pages/DataSafety"
 import Settings from "./pages/Settings"
 import HelpSupport from "./pages/HelpSupport"
+import InvoiceView from "./pages/InvoiceView"
 
 
 export default function App() {
@@ -40,6 +41,7 @@ export default function App() {
         <Route path="/data-safety" element={<DataSafety />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/help-support" element={<HelpSupport />} />
+        <Route path="/invoice/:id" element={<InvoiceView />} />
       </Routes>
     </BrowserRouter>
   )

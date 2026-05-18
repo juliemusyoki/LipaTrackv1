@@ -1,30 +1,25 @@
-export function money(amount) {
-  return `Ksh ${Number(amount || 0).toLocaleString()}`
-}
-
-export function initialsFromName(name) {
-  return name
-    .split(" ")
-    .map((word) => word[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase()
+export function money(amount = 0) {
+  return new Intl.NumberFormat("en-KE", {
+    style: "currency",
+    currency: "KES",
+    maximumFractionDigits: 0,
+  }).format(amount)
 }
 
 export function getDealStatus(deal) {
-  if (deal.paid <= 0) return "Unpaid"
-  if (deal.paid >= deal.sellingAmount) return "Paid"
-  return "Partial"
+  const paid = Number(deal.paidAmount || 0)
+  const total = Number(deal.sellingAmount || 0)
+
+  if (paid <= 0) return "unpaid"
+
+  if (paid >= total) return "paid"
+
+  return "partial"
 }
 
-export function sortDeals(deals) {
-  const rank = {
-    Unpaid: 1,
-    Partial: 2,
-    Paid: 3,
-  }
-
-  return [...deals].sort((a, b) => {
-    return rank[getDealStatus(a)] - rank[getDealStatus(b)]
-  })
+export function calculateBalance(deal) {
+  return (
+    Number(deal.sellingAmount || 0) -
+    Number(deal.paidAmount || 0)
+  )
 }
